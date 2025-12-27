@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Web Điểm Danh</title>
+    <style>
+        body { font-family: Arial; background: #f2f2f2; }
+        .container {
+            width: 500px;
+            margin: 30px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .admin {
+            background: #f44336;
+        }
+        table {
+            width: 100%;
+            margin-top: 15px;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 6px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>📋 WEB ĐIỂM DANH</h2>
+
+    <input type="text" id="mssv" placeholder="Mã sinh viên">
+    <input type="text" id="name" placeholder="Họ và tên">
+
+    <button onclick="diemDanh()">Điểm danh</button>
+    <button onclick="taiFile()">Tải file điểm danh</button>
+    <button class="admin" onclick="xoaDuLieu()">❌ Xóa dữ liệu </button>
+
+    <table>
+        <thead>
+            <tr>
+                <th>MSSV</th>
+                <th>Họ tên</th>
+                <th>Thời gian</th>
+            </tr>
+        </thead>
+        <tbody id="list"></tbody>
+    </table>
+</div>
+
+<script>
+    const ADMIN_PASSWORD = "admin123"; // đổi mật khẩu tại đây
+    let danhSach = [];
+
+    function diemDanh() {
+        let mssv = document.getElementById("mssv").value;
+        let name = document.getElementById("name").value;
+
+        if (mssv === "" || name === "") {
+            alert("Nhập đầy đủ thông tin!");
+            return;
+        }
+
+        let time = new Date().toLocaleString();
+        danhSach.push({ mssv, name, time });
+
+        let row = document.getElementById("list").insertRow();
+        row.insertCell(0).innerHTML = mssv;
+        row.insertCell(1).innerHTML = name;
+        row.insertCell(2).innerHTML = time;
+
+        document.getElementById("mssv").value = "";
+        document.getElementById("name").value = "";
+    }
+
+    function taiFile() {
+        if (danhSach.length === 0) {
+            alert("Chưa có dữ liệu!");
+            return;
+        }
+
+        let csv = "MSSV,Họ tên,Thời gian\n";
+        danhSach.forEach(sv => {
+            csv += `${sv.mssv},${sv.name},${sv.time}\n`;
+        });
+
+        let blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        let link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "diemdanh.csv";
+        link.click();
+    }
+
+    function xoaDuLieu() {
+        let pass = prompt("Nhập mật khẩu ADMIN:");
+
+        if (pass === ADMIN_PASSWORD) {
+            if (confirm("Bạn chắc chắn muốn xóa toàn bộ dữ liệu?")) {
+                danhSach = [];
+                document.getElementById("list").innerHTML = "";
+                alert("Đã xóa dữ liệu!");
+            }
+        } else {
+            alert("Sai mật khẩu admin!");
+        }
+    }
+</script>
+
+</body>
+</html>
